@@ -11,6 +11,20 @@ if (isset($_POST['action'])) {
     $request = $_POST['action'] . '/';
 }
 
+// make Logs and Tags (file) list
+$listLog = array();
+$listTxt = array();
+if ($handler = opendir("./")) {
+    while (($sub = readdir($handler)) !== FALSE) {
+        if (substr($sub, -4, 4) == ".txt") {
+            $listTxt[] = $sub;
+        } elseif (substr($sub, 0, 10) == "tinywebdb_") {
+            $listLog[] = $sub;
+        }
+    }
+    closedir($handler);
+}
+
 {
     header("HTTP/1.1 200 OK");
     $path = parse_url ($request, PHP_URL_PATH);
@@ -20,7 +34,11 @@ if (isset($_POST['action'])) {
             // JSON_API , Post Parameters : tag
             $tagName  = $_REQUEST['tag'];
             $tagValue = '';
-            is_file($tagName . ".txt") && ($tagValue = file_get_contents($tagName . ".txt"));
+	    if (empty($tagName)) {
+		$tagValue = $listTxt;
+	    } else {
+            	is_file($tagName . ".txt") && ($tagValue = file_get_contents($tagName . ".txt"));
+	    }
             header('Cache-Control: no-cache, must-revalidate');
             header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
             header('Content-type: application/json');
@@ -65,19 +83,6 @@ if (isset($_POST['action'])) {
         default:
             break;
     }
-}
-
-$listLog = array();
-$listTxt = array();
-if ($handler = opendir("./")) {
-    while (($sub = readdir($handler)) !== FALSE) {
-        if (substr($sub, -4, 4) == ".txt") {
-            $listTxt[] = $sub;
-        } elseif (substr($sub, 0, 10) == "tinywebdb_") {
-            $listLog[] = $sub;
-        }
-    }
-    closedir($handler);
 }
 
 include_once("main.html");
