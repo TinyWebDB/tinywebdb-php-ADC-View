@@ -1,5 +1,4 @@
-<h1>TinyWebDB API and Log Tail</h1>
-<h2> <a href=index.php>HOME</a>  <a href=tags.php>TAGS</a></h2>
+<h1>TinyWebDB API <a href=index.php>HOME</a> and <a href=tags.php>TAGS</a></h1>
 <form method="POST" action="">
 <?php
 setlocale(LC_TIME, "ja_JP");
@@ -25,8 +24,9 @@ echo "<th> Tag Name </th>";
 echo "<th> Size </th>";
 echo "<th> Ver </th>";
 echo "<th> localIP </th>";
-echo "<th> Temp </th>";
-echo "<th> Pres </th>";
+echo "<th> Gain </th>";
+echo "<th> Count </th>";
+echo "<th> Data </th>";
 echo "<th> battery_Vcc </th>";
 echo "<th> localTime </th>";
 echo "</tr></thead>\n";
@@ -45,12 +45,11 @@ if ($listTxt) {
         echo "<td> <input type=checkbox name='tagList[]' value=" . substr($sub, 0, -4) . "></td>\n";
         echo "<td><a href=tags.php?tag=" . substr($sub, 0, -4) . ">" .substr($sub, 0, -4) . "</a></td>\n";
         echo "<td>" . filesize("./" . $sub) . "</td>\n";
-	$tagValue = file_get_contents($sub);
-	$obj = json_decode($tagValue);
 	echo "<td>" . $obj->{'Ver'} . "</td>\n";
         echo "<td>" . $obj->{'localIP'} . "</td>\n";
-        echo "<td>" . $obj->{'temperature'} . "</td>\n";
-        echo "<td>" . $obj->{'pressure_hpa'} . "</td>\n";
+        echo "<td>" . $obj->{'Gain'} . "</td>\n";
+        echo "<td>" . $obj->{'Count'} . "</td>\n";
+        echo "<td>" . count($obj->{'sersorData'}) . "</td>\n";
         echo "<td>" . $obj->{'battery_Vcc'} . "</td>\n";
         echo "<td>" . strftime("%D %T", (int)$tim_stmp) . "</td>\n";
         echo "</tr>";
@@ -63,12 +62,7 @@ echo "</form>";
 if (isset($_GET['tag'])) {
     $tagName = $_GET['tag'];
     echo "<h2>tagName : " . $tagName . "</h2>";
-    $tagValue = file_get_contents($tagName . ".txt");
-    $obj = json_decode($tagValue);
-    $clientList = $obj->{'clientList'};
-    foreach ($clientList as $mac => $rssi ) {
-	echo $mac . " -> " . $rssi . "<br>";
-    }
+    if (file_exists('draw.php')) echo "<p><img src = 'draw.php?tagName=$tagName'></p>";
 }
 
 if (isset($_POST['tagList'])) {

@@ -82,14 +82,10 @@ if ($handler = opendir("./")) {
 
 include_once("main.html");
 
-echo "<table bgcolor=#dd88dd> ";
-echo "<tr> <td> ";
-echo "<form action='' method=post enctype=application/x-www-form-urlencoded>";
 if (file_exists('tags.php')) echo "<h3>TinyWebDB <a href=tags.php>Tags</a></h3>";
 else echo "<h3>TinyWebDB Tags</h3>";
-echo "<table border=1 bgcolor=#ffffffff>";
+echo "<table border=1>";
 echo "<thead><tr>";
-echo "<th> </th>";
 echo "<th> Tag Name </th>";
 echo "<th> Size </th>";
 echo "</tr></thead>\n";
@@ -97,7 +93,6 @@ if ($listTxt) {
     sort($listTxt);
     foreach ($listTxt as $sub) {
         echo "<tr>";
-	echo "<td> <input type=radio name=tag value=" . substr($sub, 0, -4) . "></td>\n";
         echo "<td><a href=getvalue?tag=" . substr($sub, 0, -4) . ">" .substr($sub, 0, -4) . "</a></td>\n";
         echo "<td>" . filesize("./" . $sub) . "</td>\n";
         echo "</tr>";
@@ -106,9 +101,8 @@ if ($listTxt) {
 echo "</table>";
 
 echo "<h3>TinyWebDB Log Tail</h3>";
-echo "<table border=1 bgcolor=#ffffffff>";
+echo "<table border=1>";
 echo "<thead><tr>";
-echo "<th> </th>";
 echo "<th> Log Name </th>";
 echo "<th> Size </th>";
 echo "</tr></thead>\n";
@@ -116,7 +110,6 @@ if ($listLog) {
     sort($listLog);
     foreach ($listLog as $sub) {
         echo "<tr>";
-	echo "<td> <input type=radio name=logfile value=" . $sub . "></td>\n";
         echo "<td><a href=?logfile=" . $sub . ">$sub</a></td>\n";
         echo "<td>" . filesize("./" . $sub) . "</td>\n";
         echo "</tr>";
@@ -124,21 +117,9 @@ if ($listLog) {
 }
 echo "</table>";
 
-echo "</br>";
-echo "<input type=submit value=draw></form>";
-echo "</td> </tr> ";
-echo "</table>";
-
-if (isset($_POST['logfile'])) {
-    $logfile = $_POST['logfile'];
-    $tagName = $_POST['tag'];
-    echo "<h3> Draw graph for logfile=".$logfile." and tag=" .$tagName ."</h3>";
-    if (file_exists('draw.php')) echo "<p><img src = 'draw.php?logfile=$logfile&tag=$tagName'></p>";
-    exit;
-}
-
 if (isset($_GET['logfile'])) {
     $logfile = substr($_GET['logfile'], 0, 24);
+    if (file_exists('draw.php')) echo "<p><img src = 'draw.php?logfile=$logfile'></p>";
     echo "<h2>Log file : " . $logfile . "</h2>";
     $lines = wp_tinywebdb_api_read_tail($logfile, 20);
     foreach ($lines as $line) {
