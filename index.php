@@ -13,11 +13,11 @@ if (isset($_POST['action'])) {
 
 // make Logs and Tags (file) list
 $listLog = array();
-$listTxt = array();
+$listTag = array();
 if ($handler = opendir("./")) {
     while (($sub = readdir($handler)) !== FALSE) {
         if (substr($sub, -4, 4) == ".txt") {
-            $listTxt[] = $sub;
+            $listTag[] = substr($sub, 0, -4);
         } elseif (substr($sub, 0, 10) == "tinywebdb_") {
             $listLog[] = $sub;
         }
@@ -35,7 +35,7 @@ if ($handler = opendir("./")) {
             $tagName  = $_REQUEST['tag'];
             $tagValue = '';
 	    if (empty($tagName)) {
-		$tagValue = $listTxt;
+		$tagValue = $listTag;
 	    } else {
             	is_file($tagName . ".txt") && ($tagValue = file_get_contents($tagName . ".txt"));
 	    }
@@ -94,12 +94,12 @@ echo "<thead><tr>";
 echo "<th> Tag Name </th>";
 echo "<th> Size </th>";
 echo "</tr></thead>\n";
-if ($listTxt) {
-    sort($listTxt);
-    foreach ($listTxt as $sub) {
+if ($listTag) {
+    sort($listTag);
+    foreach ($listTag as $Tag) {
         echo "<tr>";
-        echo "<td><a href=getvalue?tag=" . substr($sub, 0, -4) . ">" .substr($sub, 0, -4) . "</a></td>\n";
-        echo "<td>" . filesize("./" . $sub) . "</td>\n";
+        echo "<td><a href=getvalue?tag=" . $Tag . ">" . $Tag . "</a></td>\n";
+        echo "<td>" . filesize("./" . $Tag . ".txt" ) . "</td>\n";
         echo "</tr>";
     }
 }
