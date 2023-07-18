@@ -29,6 +29,7 @@ echo "<th> Count </th>";
 echo "<th> Data </th>";
 echo "<th> battery_Vcc </th>";
 echo "<th> localTime </th>";
+echo "<th> FileMTime </th>";
 echo "</tr></thead>\n";
 if ($listTxt) {
     $now = time();
@@ -49,9 +50,11 @@ if ($listTxt) {
         echo "<td>" . $obj->{'localIP'} . "</td>\n";
         echo "<td>" . $obj->{'Gain'} . "</td>\n";
         echo "<td>" . $obj->{'Count'} . "</td>\n";
-        echo "<td>" . count($obj->{'sersorData'}) . "</td>\n";
+        if (is_array($obj->{'sersorData'})) echo "<td>" . count($obj->{'sersorData'}) . "</td>\n"; 
+	else echo "<td>null</td>";
         echo "<td>" . $obj->{'battery_Vcc'} . "</td>\n";
         echo "<td>" . strftime("%D %T", (int)$tim_stmp) . "</td>\n";
+        echo "<td>" . strftime("%D %T", filemtime($sub)) . "</td>\n";
         echo "</tr>";
     }
 }
@@ -62,7 +65,7 @@ echo "</form>";
 if (isset($_GET['tag'])) {
     $tagName = $_GET['tag'];
     echo "<h2>tagName : " . $tagName . "</h2>";
-    if (file_exists('draw.php')) echo "<p><img src = 'draw.php?tagName=$tagName'></p>";
+    if (file_exists('drawdata.php')) echo "<p><img src = 'drawdata.php?tagName=$tagName'></p>";
 }
 
 if (isset($_POST['tagList'])) {
