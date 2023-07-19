@@ -4,7 +4,7 @@ include ("./jpgraph4/src/jpgraph_line.php");
 
 // $tempers = file($_GET['logfile']);
 $tagName = $_GET['tagName'];
-$tagValue = file_get_contents($tagName . ".txt");
+$tagValue = file_get_contents("_data/" . $tagName . ".txt");
 $obj = json_decode($tagValue);
 $datay = $obj->{'sersorData'};
 

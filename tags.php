@@ -3,18 +3,23 @@
 <?php
 setlocale(LC_TIME, "ja_JP");
 date_default_timezone_set('Asia/Tokyo');
+
+// make Logs and Tags (file) list
 $listLog = array();
-$listTxt = array();
-if ($handler = opendir("./")) {
+if ($handler = opendir("_log/")) {
     while (($sub = readdir($handler)) !== FALSE) {
-        if (substr($sub, -4, 4) == ".txt") {
-            $listTxt[] = $sub;
-        } elseif (substr($sub, 0, 10) == "tinywebdb_") {
-            $listLog[] = $sub;
-        }
+        if (is_file("_log/" . $sub)) { $listLog[] = $sub; }
     }
     closedir($handler);
 }
+$listTag = array();
+if ($handler = opendir("_data/")) {
+    while (($sub = readdir($handler)) !== FALSE) {
+        if (is_file("_data/" . $sub)) $listTxt[] = $sub;
+    }
+    closedir($handler);
+}
+
 
 echo "<h3>TinyWebDB Tags</h3>";
 echo "<table border=1>";
@@ -35,7 +40,7 @@ if ($listTxt) {
     $now = time();
     sort($listTxt);
     foreach ($listTxt as $sub) {
-	$tagValue = file_get_contents($sub);
+	$tagValue = file_get_contents("_data/" . $sub);
         $obj = json_decode($tagValue);
 	$tim_stmp = $obj->{'localTime'} - 9*3600;
         if(($now-$tim_stmp) > 600){
@@ -45,7 +50,7 @@ if ($listTxt) {
         }
         echo "<td> <input type=checkbox name='tagList[]' value=" . substr($sub, 0, -4) . "></td>\n";
         echo "<td><a href=tags.php?tag=" . substr($sub, 0, -4) . ">" .substr($sub, 0, -4) . "</a></td>\n";
-        echo "<td>" . filesize("./" . $sub) . "</td>\n";
+        echo "<td>" . filesize("_data/" . $sub) . "</td>\n";
 	echo "<td>" . $obj->{'Ver'} . "</td>\n";
         echo "<td>" . $obj->{'localIP'} . "</td>\n";
         echo "<td>" . $obj->{'Gain'} . "</td>\n";
@@ -54,7 +59,7 @@ if ($listTxt) {
 	else echo "<td>null</td>";
         echo "<td>" . $obj->{'battery_Vcc'} . "</td>\n";
         echo "<td>" . strftime("%D %T", (int)$tim_stmp) . "</td>\n";
-        echo "<td>" . strftime("%D %T", filemtime($sub)) . "</td>\n";
+        echo "<td>" . strftime("%D %T", filemtime("_data/" . $sub)) . "</td>\n";
         echo "</tr>";
     }
 }
@@ -78,7 +83,7 @@ if (isset($_POST['tagList'])) {
 	echo "<th> ";
 	echo $tagName . "<br>";
 	echo "</th>";
-	$tagValue = file_get_contents($tagName . ".txt");
+	$tagValue = file_get_contents("_data/" . $tagName . ".txt");
     	$obj = json_decode($tagValue);
     	$clientList = $obj->{'clientList'};
 	array_merge($clientMix, $clientList);
